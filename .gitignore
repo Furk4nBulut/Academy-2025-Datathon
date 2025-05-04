@@ -1,3 +1,5 @@
 catboost_info
 dataset
 predictions
+.idea
+__pycache__
