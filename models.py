@@ -6,7 +6,7 @@ from HyperTuner import HyperTuner
 
 
 class ModelEvaluator:
-    def __init__(self, best_model_name="CatBoost", output_dir="predictions"):
+    def __init__(self, best_model_name="RandomForest", output_dir="predictions"):
         """
         Initialize with a list of regression model names and specify the best model for final predictions.
 
@@ -15,7 +15,7 @@ class ModelEvaluator:
             output_dir (str): Directory to save the output CSV file (default: "predictions").
         """
         self.model_names = [
-            "SVR",
+            "RandomForest",
 
         ]
         self.best_model_name = best_model_name
@@ -95,12 +95,16 @@ class ModelEvaluator:
         predictions = best_model.predict(X_test)
         predictions = np.round(predictions, 2)  # Fiyatları 2 ondalık basamağa yuvarla
 
-        output_path = os.path.join(self.output_dir, output_file)
+        # Create submission DataFrame with floating point prices
         submission_df = pd.DataFrame({
-            "id": test_ids.astype(int),  # id'leri integer'a çevir
-            "ürün fiyatı": predictions
+            "id": test_ids.astype(int),
+            "ürün fiyatı": predictions.astype(float)  # Ensure floating point type
         })
-        submission_df.to_csv(output_path, index=False)
+
+        # Save to CSV without index
+        output_path = os.path.join(self.output_dir, output_file)
+        submission_df.to_csv(output_path, index=False, float_format='%.4f')  # 4 decimal places
+
         print(f"\n📁 Predictions saved to '{output_path}'.")
 
         return predictions
